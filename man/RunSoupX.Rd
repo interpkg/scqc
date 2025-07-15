@@ -4,7 +4,7 @@
 \alias{RunSoupX}
 \title{SoupX}
 \usage{
-RunSoupX(dir = NULL)
+RunSoupX(dir = NULL, adj = FALSE)
 }
 \arguments{
 \item{dir}{cellranger out dir}

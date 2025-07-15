@@ -4,8 +4,17 @@
 #' @param dir cellranger out dir
 #' @export
 #'
-RunDropletQC <- function(dir=NULL){
-    dnf <- DropletQC::nuclear_fraction_tags(outs = dir, tiles = 1, cores = 1, verbose = FALSE)
+RunDropletQC <- function(dir=NULL, tool='cellranger'){
+	if (tool == 'cellranger'){
+		dnf <- DropletQC::nuclear_fraction_tags(outs = dir, tiles = 1, cores = 1, verbose = FALSE)
+	} 
+
+	if (tool == 'cellranger-arc'){
+		bam <- paste0(dir, '/gex_possorted_bam.bam')
+		barcodes <- paste0(dir, '/filtered_feature_bc_matrix/barcodes.tsv.gz')
+		dnf <- DropletQC::nuclear_fraction_tags(bam = bam, barcodes=barcodes, tiles = 1, cores = 1, verbose = FALSE)
+	}
+    
 	write.table(dnf, file=paste0(dir, '/nuclear_fraction.tsv'), sep='\t', quote=FALSE, col.names=FALSE)
 }
 
