@@ -1,0 +1,21 @@
+Package: scqc
+Title: Single-cell data quality control for downstream data
+Version: 0.1
+Description: This package for QC of single cell data.
+Author: Hua Sun [aut,cre]
+Maintainer: Hua Sun <hua.sun229@gmail.com>
+License: MIT + file LICENSE
+Depends:
+    R (>= 4.2.1)
+Imports:
+    Seurat (>= 5.1.0),
+    dplyr,
+    DoubletFinder,
+    DropletUtils,
+    SoupX,
+    DropletQC,
+    ggplot2,
+    stringr,
+    stringi
+Encoding: UTF-8
+RoxygenNote: 7.3.2
