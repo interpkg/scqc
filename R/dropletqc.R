@@ -4,12 +4,12 @@
 #' @param dir cellranger out dir
 #' @export
 #'
-RunDropletQC <- function(dir=NULL, tool='cellranger'){
-	if (tool == 'cellranger'){
+RunDropletQC <- function(dir=NULL, form='cellranger'){
+	if (form == 'cellranger'){
 		dnf <- DropletQC::nuclear_fraction_tags(outs = dir, tiles = 1, cores = 1, verbose = FALSE)
 	} 
 
-	if (tool == 'cellranger-arc'){
+	if (form == 'cellranger-arc'){
 		bam <- paste0(dir, '/gex_possorted_bam.bam')
 		barcodes <- paste0(dir, '/filtered_feature_bc_matrix/barcodes.tsv.gz')
 		dnf <- DropletQC::nuclear_fraction_tags(bam = bam, barcodes=barcodes, tiles = 1, cores = 1, verbose = FALSE)
