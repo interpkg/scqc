@@ -10,6 +10,9 @@ RunSoupX <- function(dir=NULL, adj=FALSE){
     sc <- SoupX::autoEstCont(sc)
     dev.off()
 
+    # soupx- Estimated global rho
+    writeLines(unique(sc$metaData$rho), paste0(dir, '/soupx.raw.global_rho.out'))
+
     # adjust counts
     if (adj){
         adj.matrix <- SoupX::adjustCounts(sc, roundToInt = TRUE)
