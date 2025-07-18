@@ -53,6 +53,9 @@ RunEmptyDrop <- function(
 	                                include_plot = include_plot)
 	write.table(nfc.ed, file=paste0(outdir,'/nf_umi.empty_drops.tsv'), sep='\t', quote=FALSE, col.names=NA)
 
+	d_log <- as.data.frame(table(nfc.ed$cell_status))
+	write.table(d_log, file=paste0(outdir,'/nf_umi.empty_drops.log'), sep='\t', quote=FALSE, row.names=F, col.names=F)
+
 
 	# Identify damaged cells
 	if (nchar(col_ct) > 0){
@@ -60,6 +63,9 @@ RunEmptyDrop <- function(
 
 		nfc.ed_dc <- DropletQC::identify_damaged_cells(nfc.ed, verbose = FALSE)
 		write.table(nfc.ed_dc, file=paste0(outdir,'/nf_umi.damaged_cells.tsv'), sep='\t', quote=FALSE, col.names=NA)
+
+		d_log <- as.data.frame(table(nfc.ed_dc$cell_status))
+		write.table(d_log, file=paste0(outdir,'/nf_umi.damaged_cells.log'), sep='\t', quote=FALSE, row.names=F, col.names=F)
 	}
 }
 
