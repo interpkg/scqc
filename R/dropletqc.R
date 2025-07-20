@@ -94,7 +94,7 @@ EstimateEmptyDrops <- function(
 RunFilterEmptyDrops <- function(dir=NULL, obj=NULL, form='cellranger', outdir='.'){
 	meta <- obj@meta.data
 
-	RunDropletQC(dir=dir, form=form, outdir=outdir, set_write=TRUE, set_return=TRUE)
+	RunDropletQC(dir=dir, form=form, outdir=outdir)
 	EstimateEmptyDrops(fnf=paste0(outdir, '/nuclear_fraction.tsv'), meta=meta, outdir=outdir)
 
 	empty_drop <- read.table(paste0(outdir, '/nf_umi.empty_drops.tsv'), sep='\t', header=T, row.names=1)
