@@ -25,7 +25,7 @@ RunDropletQC <- function(dir=NULL, form='cellranger', prefix='', outdir=''){
 	}
 	
 	# outfile
-	outfile <- ifelse(prefix == '', 'nuclear_fraction.tsv', paste0(prefix, '.nuclear_fraction.tsv'))
+	outfile <- ifelse(prefix == '', paste0(outdir, '/nuclear_fraction.tsv'), paste0(outdir, '/', prefix, '.nuclear_fraction.tsv'))
 	write.table(dnf, file=paste0(outdir, '/', outfile), sep='\t', quote=FALSE, col.names=FALSE)
 }
 
@@ -60,7 +60,7 @@ EstimateEmptyDrops <- function(
 	nf_umi <- meta[, c('nf', 'nCount_RNA')]
 	colnames(nf_umi) <- c('nf', 'umi_count')
 
-	out1 <- ifelse(prefix == '', 'nf_umi.tsv', paste0(prefix, '.nf_umi.tsv'))
+	out1 <- ifelse(prefix == '', paste0(outdir, '/nf_umi.tsv'), paste0(outdir, '/', prefix, '.nf_umi.tsv'))
 	write.table(nf_umi, file=out1, sep='\t', quote=FALSE, col.names=NA)
 
 
@@ -70,11 +70,11 @@ EstimateEmptyDrops <- function(
 	                           		nf_rescue = nf_rescue, umi_rescue = umi_rescue,
 	                                include_plot = include_plot)
 
-	out2 <- ifelse(prefix == '', 'nf_umi.empty_drops.tsv', paste0(prefix, '.nf_umi.empty_drops.tsv'))
+	out2 <- ifelse(prefix == '', paste0(outdir, '/nf_umi.empty_drops.tsv'), paste0(outdir, '/', prefix, '.nf_umi.empty_drops.tsv'))
 	write.table(nfc.ed, file=out2, sep='\t', quote=FALSE, col.names=NA)
 
 	d_log <- as.data.frame(table(nfc.ed$cell_status))
-	out3 <- ifelse(prefix == '', 'nf_umi.empty_drops.log', paste0(prefix, '.nf_umi.empty_drops.log'))
+	out3 <- ifelse(prefix == '', paste0(outdir, '/nf_umi.empty_drops.log'), paste0(outdir, '/', prefix, '.nf_umi.empty_drops.log'))
 	write.table(d_log, file=out3, sep='\t', quote=FALSE, row.names=F, col.names=F)
 
 
@@ -83,11 +83,11 @@ EstimateEmptyDrops <- function(
 		nfc.ed$cell_type <- meta[[col_ct]]
 
 		nfc.ed_dc <- DropletQC::identify_damaged_cells(nfc.ed, verbose = FALSE)
-		out4 <- ifelse(prefix == '', 'nf_umi.damaged_cells.tsv', paste0(prefix, '.nf_umi.damaged_cells.tsv'))
+		out4 <- ifelse(prefix == '', paste0(outdir, '/nf_umi.damaged_cells.tsv'), paste0(outdir, '/', prefix, '.nf_umi.damaged_cells.tsv'))
 		write.table(nfc.ed_dc, file=out4, sep='\t', quote=FALSE, col.names=NA)
 
 		d_log <- as.data.frame(table(nfc.ed_dc$cell_status))
-		out5 <- ifelse(prefix == '', 'nf_umi.damaged_cells.log', paste0(prefix, '.nf_umi.damaged_cells.log'))
+		out5 <- ifelse(prefix == '', paste0(outdir, '/nf_umi.damaged_cells.log'), paste0(poutdir, '/', refix, '.nf_umi.damaged_cells.log'))
 		write.table(d_log, file=out5, sep='\t', quote=FALSE, row.names=F, col.names=F)
 	}
 }
@@ -105,7 +105,7 @@ RunFilterEmptyDrops <- function(dir=NULL, obj=NULL, form='cellranger', prefix=''
 	meta <- obj@meta.data
 
 	RunDropletQC(dir=dir, form=form, prefix=prefix, outdir=outdir)
-	fnf <- ifelse(prefix == '', 'nuclear_fraction.tsv', paste0(prefix, '.nuclear_fraction.tsv'))
+	fnf <- ifelse(prefix == '', paste0(outdir, '/nuclear_fraction.tsv'), paste0(outdir, '/', prefix, '.nuclear_fraction.tsv'))
 	EstimateEmptyDrops(fnf=paste0(outdir, '/', fnf), meta=meta, prefix=prefix, outdir=outdir)
 
 	empty_drop <- read.table(paste0(outdir, '/nf_umi.empty_drops.tsv'), sep='\t', header=T, row.names=1)
