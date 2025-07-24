@@ -4,7 +4,7 @@
 #' @param dir cellranger out dir
 #' @export
 #'
-RunDropletQC <- function(dir=NULL, form='cellranger', outdir=''){
+RunDropletQC <- function(dir=NULL, form='cellranger', prefix='', outdir=''){
 	dnf <- NULL
 
 	if (form == 'cellranger'){
@@ -24,8 +24,9 @@ RunDropletQC <- function(dir=NULL, form='cellranger', outdir=''){
 		dir.create(outdir)
 	}
 	
-	write.table(dnf, file=paste0(outdir, '/nuclear_fraction.tsv'), sep='\t', quote=FALSE, col.names=FALSE)
-	
+	# outfile
+	outfile <- ifelse(prefix == '', 'nuclear_fraction.tsv', paste0(prefix, '.nuclear_fraction.tsv'))
+	write.table(dnf, file=paste0(outdir, '/', outfile), sep='\t', quote=FALSE, col.names=FALSE)
 }
 
 
@@ -39,11 +40,13 @@ RunDropletQC <- function(dir=NULL, form='cellranger', outdir=''){
 #' @export
 #'
 EstimateEmptyDrops <- function(
-	fnf=NULL, meta=NULL, 
+	fnf=NULL, 
+	meta=NULL, 
 	nf_rescue=0.05, 
 	umi_rescue=1000, 
 	include_plot=FALSE,
 	col_ct='', 
+	prefix='', 
 	outdir='.'
 ){
 	dir.create(outdir)
@@ -56,7 +59,9 @@ EstimateEmptyDrops <- function(
 	meta$nf <- dnf$nf[match(rownames(meta), dnf$cell)]
 	nf_umi <- meta[, c('nf', 'nCount_RNA')]
 	colnames(nf_umi) <- c('nf', 'umi_count')
-	write.table(nf_umi, file=paste0(outdir,'/nf_umi.tsv'), sep='\t', quote=FALSE, col.names=NA)
+
+	out1 <- ifelse(prefix == '', 'nf_umi.tsv', paste0(prefix, '.nf_umi.tsv'))
+	write.table(nf_umi, file=out1, sep='\t', quote=FALSE, col.names=NA)
 
 
 	# Identify drop cells
@@ -64,10 +69,13 @@ EstimateEmptyDrops <- function(
 	nfc.ed <- DropletQC::identify_empty_drops(nf_umi=nf_umi,
 	                           		nf_rescue = nf_rescue, umi_rescue = umi_rescue,
 	                                include_plot = include_plot)
-	write.table(nfc.ed, file=paste0(outdir,'/nf_umi.empty_drops.tsv'), sep='\t', quote=FALSE, col.names=NA)
+
+	out2 <- ifelse(prefix == '', 'nf_umi.empty_drops.tsv', paste0(prefix, '.nf_umi.empty_drops.tsv'))
+	write.table(nfc.ed, file=out2, sep='\t', quote=FALSE, col.names=NA)
 
 	d_log <- as.data.frame(table(nfc.ed$cell_status))
-	write.table(d_log, file=paste0(outdir,'/nf_umi.empty_drops.log'), sep='\t', quote=FALSE, row.names=F, col.names=F)
+	out3 <- ifelse(prefix == '', 'nf_umi.empty_drops.log', paste0(prefix, '.nf_umi.empty_drops.log'))
+	write.table(d_log, file=out3, sep='\t', quote=FALSE, row.names=F, col.names=F)
 
 
 	# Identify damaged cells
@@ -75,10 +83,12 @@ EstimateEmptyDrops <- function(
 		nfc.ed$cell_type <- meta[[col_ct]]
 
 		nfc.ed_dc <- DropletQC::identify_damaged_cells(nfc.ed, verbose = FALSE)
-		write.table(nfc.ed_dc, file=paste0(outdir,'/nf_umi.damaged_cells.tsv'), sep='\t', quote=FALSE, col.names=NA)
+		out4 <- ifelse(prefix == '', 'nf_umi.damaged_cells.tsv', paste0(prefix, '.nf_umi.damaged_cells.tsv'))
+		write.table(nfc.ed_dc, file=out4, sep='\t', quote=FALSE, col.names=NA)
 
 		d_log <- as.data.frame(table(nfc.ed_dc$cell_status))
-		write.table(d_log, file=paste0(outdir,'/nf_umi.damaged_cells.log'), sep='\t', quote=FALSE, row.names=F, col.names=F)
+		out5 <- ifelse(prefix == '', 'nf_umi.damaged_cells.log', paste0(prefix, '.nf_umi.damaged_cells.log'))
+		write.table(d_log, file=out5, sep='\t', quote=FALSE, row.names=F, col.names=F)
 	}
 }
 
@@ -91,11 +101,12 @@ EstimateEmptyDrops <- function(
 #' @param obj seurat object
 #' @export
 #'
-RunFilterEmptyDrops <- function(dir=NULL, obj=NULL, form='cellranger', outdir='.'){
+RunFilterEmptyDrops <- function(dir=NULL, obj=NULL, form='cellranger', prefix='', outdir='.'){
 	meta <- obj@meta.data
 
-	RunDropletQC(dir=dir, form=form, outdir=outdir)
-	EstimateEmptyDrops(fnf=paste0(outdir, '/nuclear_fraction.tsv'), meta=meta, outdir=outdir)
+	RunDropletQC(dir=dir, form=form, prefix=prefix, outdir=outdir)
+	fnf <- ifelse(prefix == '', 'nuclear_fraction.tsv', paste0(prefix, '.nuclear_fraction.tsv'))
+	EstimateEmptyDrops(fnf=paste0(outdir, '/', fnf), meta=meta, prefix=prefix, outdir=outdir)
 
 	empty_drop <- read.table(paste0(outdir, '/nf_umi.empty_drops.tsv'), sep='\t', header=T, row.names=1)
 
