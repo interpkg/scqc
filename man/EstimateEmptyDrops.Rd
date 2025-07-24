@@ -11,6 +11,7 @@ EstimateEmptyDrops(
   umi_rescue = 1000,
   include_plot = FALSE,
   col_ct = "",
+  prefix = "",
   outdir = "."
 )
 }

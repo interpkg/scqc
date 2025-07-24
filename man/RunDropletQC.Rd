@@ -4,7 +4,7 @@
 \alias{RunDropletQC}
 \title{DropletQC}
 \usage{
-RunDropletQC(dir = NULL, form = "cellranger", outdir = "")
+RunDropletQC(dir = NULL, form = "cellranger", prefix = "", outdir = "")
 }
 \arguments{
 \item{dir}{cellranger out dir}

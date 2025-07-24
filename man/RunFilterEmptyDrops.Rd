@@ -4,7 +4,13 @@
 \alias{RunFilterEmptyDrops}
 \title{Filter empty droplet using DropletQC}
 \usage{
-RunFilterEmptyDrops(dir = NULL, obj = NULL, form = "cellranger", outdir = ".")
+RunFilterEmptyDrops(
+  dir = NULL,
+  obj = NULL,
+  form = "cellranger",
+  prefix = "",
+  outdir = "."
+)
 }
 \arguments{
 \item{dir}{cellranger out dir}
