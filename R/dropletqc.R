@@ -17,16 +17,11 @@ RunDropletQC <- function(dir=NULL, form='cellranger', prefix='', outdir=''){
 		dnf <- DropletQC::nuclear_fraction_tags(bam = bam, barcodes=barcodes, tiles = 1, cores = 1, verbose = FALSE)
 	}
     
+    ifelse(nchar(outdir) == 0, outdir <- dir, dir.create(outdir))
 
-	if (nchar(outdir) == 0){
-		outdir <- dir
-	} else {
-		dir.create(outdir)
-	}
-	
 	# outfile
 	outfile <- ifelse(prefix == '', paste0(outdir, '/nuclear_fraction.tsv'), paste0(outdir, '/', prefix, '.nuclear_fraction.tsv'))
-	write.table(dnf, file=paste0(outdir, '/', outfile), sep='\t', quote=FALSE, col.names=FALSE)
+	write.table(dnf, file=outfile, sep='\t', quote=FALSE, col.names=FALSE)
 }
 
 
