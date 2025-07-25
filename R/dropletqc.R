@@ -103,7 +103,8 @@ RunFilterEmptyDrops <- function(dir=NULL, obj=NULL, form='cellranger', prefix=''
 	fnf <- ifelse(prefix == '', paste0(outdir, '/nuclear_fraction.tsv'), paste0(outdir, '/', prefix, '.nuclear_fraction.tsv'))
 	EstimateEmptyDrops(fnf=fnf, meta=meta, prefix=prefix, outdir=outdir)
 
-	empty_drop <- read.table(paste0(outdir, '/nf_umi.empty_drops.tsv'), sep='\t', header=T, row.names=1)
+	f_empty_drop <- ifelse(prefix == '', paste0(outdir, '/nf_umi.empty_drops.tsv'), paste0(outdir, '/', prefix, '.nf_umi.empty_drops.tsv'))
+	empty_drop <- read.table(f_empty_drop, sep='\t', header=T, row.names=1)
 
 	# real cell (filtered emptydrop)
 	real_cell <- rownames(empty_drop)[empty_drop$cell_status == 'cell']
