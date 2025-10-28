@@ -4,7 +4,7 @@
 \alias{Run_scDblFinder_ATAC}
 \title{scDblFinder for ATAC}
 \usage{
-Run_scDblFinder_ATAC(obj = NULL, fragfile = NULL)
+Run_scDblFinder_ATAC(obj = NULL, fragfile = NULL, repeats = NULL)
 }
 \arguments{
 \item{obj}{seurat object}

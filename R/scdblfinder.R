@@ -5,8 +5,11 @@
 #' @param fragfile fragments.tsv.gz file
 #' @export
 #'
-Run_scDblFinder_ATAC <- function(obj=NULL, fragfile=NULL){
+Run_scDblFinder_ATAC <- function(obj=NULL, fragfile=NULL, repeats=NULL){
     # amulet
+    #repeats =  import('resources/blacklist_repeats_segdups_rmsk_hg38.bed')
+    otherChroms <- GRanges(c("chrM","chrX","chrY","MT","M","X","Y"),IRanges(1L,width=10^8)) # check which chromosome notation you are using c("M", "X", "Y", "MT")
+    toExclude <- suppressWarnings(c(repeats, otherChroms))
     res <- scDblFinder::amulet(fragfile, regionsToExclude=toExclude)
 
     # scDblFinder
