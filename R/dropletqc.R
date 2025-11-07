@@ -101,6 +101,8 @@ RunFilterEmptyDrops <- function(dir=NULL, obj=NULL, form='cellranger', prefix=''
 
 	RunDropletQC(dir=dir, form=form, prefix=prefix, outdir=outdir)
 	fnf <- ifelse(prefix == '', paste0(outdir, '/nuclear_fraction.tsv'), paste0(outdir, '/', prefix, '.nuclear_fraction.tsv'))
+	
+	# used cells from 'obj@meta.data'
 	EstimateEmptyDrops(fnf=fnf, meta=meta, prefix=prefix, outdir=outdir)
 
 	f_empty_drop <- ifelse(prefix == '', paste0(outdir, '/nf_umi.empty_drops.tsv'), paste0(outdir, '/', prefix, '.nf_umi.empty_drops.tsv'))
@@ -108,11 +110,16 @@ RunFilterEmptyDrops <- function(dir=NULL, obj=NULL, form='cellranger', prefix=''
 
 	# real cell (filtered emptydrop)
 	real_cell <- rownames(empty_drop)[empty_drop$cell_status == 'cell']
+	# Redundant (EstimateEmptyDrops) but safe 
 	intesect_cells <- intersect(Cells(obj), real_cell)
 	obj <- subset(obj, cells=intesect_cells)
 
 	return(obj)
 }
+
+
+
+
 
 
 
