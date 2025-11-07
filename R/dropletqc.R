@@ -108,7 +108,8 @@ RunFilterEmptyDrops <- function(dir=NULL, obj=NULL, form='cellranger', prefix=''
 
 	# real cell (filtered emptydrop)
 	real_cell <- rownames(empty_drop)[empty_drop$cell_status == 'cell']
-	obj <- subset(obj, cells=real_cell)
+	intesect_cells <- intersect(Cells(obj), real_cell)
+	obj <- subset(obj, cells=intesect_cells)
 
 	return(obj)
 }
