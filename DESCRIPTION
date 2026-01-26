@@ -1,6 +1,6 @@
 Package: scqc
 Title: Single-cell data quality control for downstream data
-Version: 0.2
+Version: 0.2.1
 Description: This package for QC of single cell data.
 Author: Hua Sun [aut,cre]
 Maintainer: Hua Sun <hua.sun229@gmail.com>

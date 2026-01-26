@@ -2,6 +2,7 @@
 
 export(EstimateEmptyDrops)
 export(RunDoubletFinder)
+export(RunDoubletFinder2)
 export(RunDropletQC)
 export(RunFilterEmptyDrops)
 export(RunSoupX)
