@@ -140,6 +140,7 @@ RunDoubletFinder2 <- function(
     doublet_rate = n_total_cell/10000*rate
     print(paste0('[INFO] Total cells: ', n_total_cell))
     print(paste0('[INFO] Estimated doublet rate: ', doublet_rate))
+    print(paste0('[INFO] pK: ', pK))
 
     ## Homotypic Doublet Proportion Estimate 
     homotypic.prop <- DoubletFinder::modelHomotypic(annotations)
