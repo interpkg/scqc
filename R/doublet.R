@@ -6,7 +6,7 @@
 #' @return object
 #' @export
 #'
-RunDoubletFinder <- function(obj=NULL, singlet=TRUE, rate=0.075, outdir='.')
+RunDoubletFinder <- function(obj=NULL, singlet=TRUE, outdir='.')
 {   
     DefaultAssay(obj) <- 'RNA'
     
@@ -124,14 +124,7 @@ RunDoubletFinder2 <- function(
     sweep.res <- DoubletFinder::paramSweep(obj, PCs = 1:max_dim, sct = FALSE)
     sweep.stats <- DoubletFinder::summarizeSweep(sweep.res, GT = FALSE)
     bcmvn <- DoubletFinder::find.pK(sweep.stats)
-
-    ## pK Identification (ground-truth) 
-    sweep.res <- DoubletFinder::paramSweep(obj, PCs = 1:max_dim, sct = FALSE)
-    gt.calls <- obj@meta.data[rownames(sweep.res[[1]]), "GT"]
-    sweep.stats <- DoubletFinder::summarizeSweep(sweep.res, GT = TRUE, GT.calls = gt.calls)
-    bcmvn <- DoubletFinder::find.pK(sweep.stats)
-    pK <- bcmvn %>% dplyr::filter(BCmetric == max(BCmetric)) %>% dplyr::select(pK)
-    pK <- as.numeric(as.character(pK[[1]]))
+    optimal.pk <- as.numeric(as.character(bcmvn$pK[which.max(bcmvn$BCmetric)]))
 
     # 10x Single Cell 3' Gene Expression v3.1 assay
     # https://kb.10xgenomics.com/s/article/33451184917389-Can-I-perform-Cell-Hashing-in-a-GEM-X-Universal-3-Gene-Expression-v4-workflow
@@ -140,21 +133,21 @@ RunDoubletFinder2 <- function(
     doublet_rate = n_total_cell/10000*rate
     print(paste0('[INFO] Total cells: ', n_total_cell))
     print(paste0('[INFO] Estimated doublet rate: ', doublet_rate))
-    print(paste0('[INFO] pK: ', pK))
+    print(paste0('[INFO] pK: ', optimal.pk))
 
     ## Homotypic Doublet Proportion Estimate 
-    homotypic.prop <- DoubletFinder::modelHomotypic(annotations)
+    homotypic.prop <- DoubletFinder::modelHomotypic(obj@meta.data$seurat_clusters)
     nExp_poi <- round(doublet_rate*nrow(obj@meta.data))
     nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
 
     ## Run DoubletFinder with varying classification stringencies 
-    obj <- DoubletFinder::doubletFinder(obj, PCs = 1:max_dim, pN = 0.25, pK = pK, nExp = nExp_poi.adj, reuse.pANN = FALSE, sct = FALSE)
+    obj <- DoubletFinder::doubletFinder(obj, PCs = 1:max_dim, pN = 0.25, pK = optimal.pk, nExp = nExp_poi.adj, reuse.pANN = FALSE, sct = FALSE)
     colnames(obj@meta.data) <- sub("^DF.classifications.*", "doubletfinder", colnames(obj@meta.data))
 
 
     # plot
     sample_name <- unique(obj$orig.ident)
-    p <- DimPlot(obj, group.by = 'doubletfinder')
+    p <- Seurat::DimPlot(obj, group.by = 'doubletfinder')
     ggplot2::ggsave(paste0(outdir, '/doubletfinder.', sample_name, '.umap.pdf'), width = 6, height = 5)
 
     # output for metadata with doublet results

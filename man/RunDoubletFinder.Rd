@@ -4,7 +4,7 @@
 \alias{RunDoubletFinder}
 \title{DoubletFinder}
 \usage{
-RunDoubletFinder(obj = NULL, singlet = TRUE, rate = 0.075, outdir = ".")
+RunDoubletFinder(obj = NULL, singlet = TRUE, outdir = ".")
 }
 \arguments{
 \item{obj}{object}
