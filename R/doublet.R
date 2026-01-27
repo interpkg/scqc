@@ -129,7 +129,9 @@ RunDoubletFinder2 <- function(
     sweep.res <- DoubletFinder::paramSweep(obj, PCs = 1:max_dim, sct = FALSE)
     gt.calls <- obj@meta.data[rownames(sweep.res[[1]]), "GT"]
     sweep.stats <- DoubletFinder::summarizeSweep(sweep.res, GT = TRUE, GT.calls = gt.calls)
-    bcmvn <- find.pK(sweep.stats)
+    bcmvn <- DoubletFinder::find.pK(sweep.stats)
+    pK <- bcmvn %>% dplyr::filter(BCmetric == max(BCmetric)) %>% dplyr::select(pK)
+    pK <- as.numeric(as.character(pK[[1]]))
 
     # 10x Single Cell 3' Gene Expression v3.1 assay
     # https://kb.10xgenomics.com/s/article/33451184917389-Can-I-perform-Cell-Hashing-in-a-GEM-X-Universal-3-Gene-Expression-v4-workflow
@@ -145,7 +147,7 @@ RunDoubletFinder2 <- function(
     nExp_poi.adj <- round(nExp_poi*(1-homotypic.prop))
 
     ## Run DoubletFinder with varying classification stringencies 
-    obj <- DoubletFinder::doubletFinder(obj, PCs = 1:max_dim, pN = 0.25, pK = 0.09, nExp = nExp_poi.adj, reuse.pANN = FALSE, sct = FALSE)
+    obj <- DoubletFinder::doubletFinder(obj, PCs = 1:max_dim, pN = 0.25, pK = pK, nExp = nExp_poi.adj, reuse.pANN = FALSE, sct = FALSE)
     colnames(obj@meta.data) <- sub("^DF.classifications.*", "doubletfinder", colnames(obj@meta.data))
 
 
