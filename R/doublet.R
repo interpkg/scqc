@@ -91,8 +91,8 @@ RunDoubletFinder <- function(obj=NULL, singlet=TRUE, outdir='.')
 RunDoubletFinder2 <- function(
     obj=NULL, 
     singlet=TRUE, 
-    rate=0.076, 
-    max_dim=10, 
+    rate=0.075, 
+    max_dim=30, 
     outdir='.'
 ){   
     # 2026-01-26
@@ -119,6 +119,7 @@ RunDoubletFinder2 <- function(
     obj <- ScaleData(obj)
     obj <- RunPCA(obj)
     obj <- RunUMAP(obj, dims = 1:max_dim)
+
 
     ## pK Identification (no ground-truth) 
     sweep.res <- DoubletFinder::paramSweep(obj, PCs = 1:max_dim, sct = FALSE)
