@@ -6,9 +6,9 @@
 \usage{
 RunDoubletFinder2(
   obj = NULL,
+  kit = "v3",
   singlet = TRUE,
-  rate = 0.076,
-  max_dim = 10,
+  max_dim = 30,
   outdir = "."
 )
 }

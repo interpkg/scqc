@@ -80,6 +80,56 @@ RunDoubletFinder <- function(obj=NULL, singlet=TRUE, outdir='.')
 
 
 
+
+
+
+#' Calculate_multiplet_rate for 10xGenomics Single cell 3' kit
+#'
+#' @param n_cell total cells
+#' @param kit  kit version
+#' @return rate
+#' @export
+#'
+Calculate_multiplet_rate <- function(
+    n_cell, 
+    kit='v4'
+){
+
+    multiplet_rate <- 0
+
+    # > SingleCell3_v4
+    # Chromium GEM-X Single Cell 3' v4 Gene Expression User Guide
+    # https://cdn.10xgenomics.com/image/upload/v1725314293/support-documents/CG000731_ChromiumGEM-X_SingleCell3v4_UserGuide_RevB.pdf
+    if (kit=='v4'){
+        multiplet_rate <- 0.0004 * n_cell
+    }
+
+
+    # > SingleCell3_v3
+    # Chromium Single Cell 3' Reagent Kits User Guide (v3.1 Chemistry Dual Index)
+    # https://cdn.10xgenomics.com/image/upload/v1722285481/support-documents/CG000315_ChromiumNextGEMSingleCell3__GeneExpression_v3.1_DualIndex__RevF.pdf
+    # set rate=0.08 is for scRNA & assume total pre-filtered cells are 10000
+    if (kit=='v3'){
+        
+        if (n_cell <= 2000) {
+                # For up to 2000 cells: rate = 0.0008 * n_cell
+                multiplet_rate <- 0.0008 * n_cell
+        } else {
+                # For more than 2000 cells: slightly lower rate increase
+                base_rate <- 1.6  # Rate at 2000 cells
+                additional_cells <- n_cell - 2000
+                # Rate increases by 0.00075 per additional cell after 2000
+                multiplet_rate <- base_rate + 0.00075 * additional_cells
+        }
+    }
+
+    # doublet-rate style
+    return(multiplet_rate/100)
+}
+
+
+
+
 #' DoubletFinder 2
 #'
 #' @param obj object
@@ -90,26 +140,11 @@ RunDoubletFinder <- function(obj=NULL, singlet=TRUE, outdir='.')
 #'
 RunDoubletFinder2 <- function(
     obj=NULL, 
+    kit='v3',
     singlet=TRUE, 
-    rate=0.075, 
-    max_dim=30, 
+    max_dim=30,
     outdir='.'
 ){   
-    # 2026-01-26
-    # Can I perform Cell Hashing in a GEM-X Universal 3’ Gene Expression v4 workflow?
-    # https://kb.10xgenomics.com/s/article/33451184917389-Can-I-perform-Cell-Hashing-in-a-GEM-X-Universal-3-Gene-Expression-v4-workflow
-
-    # > SingleCell3_v3
-    # Chromium Single Cell 3' Reagent Kits User Guide (v3.1 Chemistry Dual Index)
-    # https://cdn.10xgenomics.com/image/upload/v1722285481/support-documents/CG000315_ChromiumNextGEMSingleCell3__GeneExpression_v3.1_DualIndex__RevF.pdf
-    # set rate=0.08 is for scRNA & assume total pre-filtered cells are 10000
-    # rate <- 0.08
-    
-    # > SingleCell3_v4
-    # Chromium GEM-X Single Cell 3' v4 Gene Expression User Guide
-    # https://cdn.10xgenomics.com/image/upload/v1725314293/support-documents/CG000731_ChromiumGEM-X_SingleCell3v4_UserGuide_RevB.pdf
-    # rate <- 0.04
-
 
     # 2026-01
     # https://github.com/chris-mcginnis-ucsf/DoubletFinder
@@ -127,12 +162,13 @@ RunDoubletFinder2 <- function(
     bcmvn <- DoubletFinder::find.pK(sweep.stats)
     optimal.pk <- as.numeric(as.character(bcmvn$pK[which.max(bcmvn$BCmetric)]))
 
-    # 10x Single Cell 3' Gene Expression v3.1 assay
-    # https://kb.10xgenomics.com/s/article/33451184917389-Can-I-perform-Cell-Hashing-in-a-GEM-X-Universal-3-Gene-Expression-v4-workflow
-    # 
-    n_total_cell = nrow(obj@meta.data)
-    doublet_rate = n_total_cell/10000*rate
-    print(paste0('[INFO] Total cells: ', n_total_cell))
+
+    # cal doublet rate
+    n_cell = nrow(obj@meta.data)   
+    doublet_rate <- Calculate_multiplet_rate(n_cell, kit)
+    
+    # Function to calculate rate based on n_cell
+    print(paste0('[INFO] Total cells: ', n_cell))
     print(paste0('[INFO] Estimated doublet rate: ', doublet_rate))
     print(paste0('[INFO] pK: ', optimal.pk))
 
